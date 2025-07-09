@@ -1,0 +1,61 @@
+# Shopify Theme Check Configuration
+# https://shopify.dev/themes/tools/theme-check
+
+root: .
+
+ignore:
+  - node_modules/**
+  - .git/**
+  - dist/**
+  - .cache/**
+
+# Enable all checks by default
+enabled_checks:
+  - AssetSizeCSS
+  - AssetSizeJavaScript
+  - AssetUrlFilters
+  - ContentForHeaderModification
+  - ConvertIncludeToRender
+  - DefaultLocale
+  - DeprecatedFilters
+  - DeprecatedGlobalAppBlockType
+  - DeprecatedLazysizes
+  - DeprecatedTags
+  - HtmlParsingError
+  - ImgLazyLoading
+  - LiquidHTMLSyntaxError
+  - MatchingSchemaTranslations
+  - MatchingTranslations
+  - MissingEnableComment
+  - MissingRequiredTemplateFiles
+  - MissingTemplate
+  - NestedSnippet
+  - ParserBlockingJavaScript
+  - ParserBlockingScriptTag
+  - RemoteAsset
+  - RequiredLayoutThemeObject
+  - SpaceInsideBraces
+  - SyntaxError
+  - TemplateLength
+  - TranslationKeyExists
+  - UndefinedObject
+  - UnknownFilter
+  - UnusedAssign
+  - UnusedSnippet
+  - ValidHTMLTranslation
+  - ValidJson
+  - ValidSchema
+
+# Configure specific checks
+AssetSizeCSS:
+  threshold_in_bytes: 100000  # 100KB
+
+AssetSizeJavaScript:
+  threshold_in_bytes: 100000  # 100KB
+
+TemplateLength:
+  max_length: 500
+
+# Disable specific checks if needed
+# disabled_checks:
+#   - UnusedSnippet

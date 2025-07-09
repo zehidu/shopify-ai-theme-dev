@@ -1,0 +1,155 @@
+name: Shopify Theme CI/CD
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main]
+
+jobs:
+  test:
+    name: Test & Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run Theme Check
+        run: npx theme-check .
+
+      - name: Lint CSS
+        run: npm run lint:css
+
+      - name: Lint JavaScript
+        run: npm run lint:js
+
+      - name: Run unit tests
+        run: npm run test:unit
+
+  visual-tests:
+    name: Visual Regression Tests
+    runs-on: ubuntu-latest
+    needs: test
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright
+        run: npx playwright install --with-deps
+
+      - name: Run Playwright tests
+        run: npm run test:visual
+        env:
+          SHOPIFY_STORE_URL: ${{ secrets.SHOPIFY_STORE_URL }}
+          SHOPIFY_ACCESS_TOKEN: ${{ secrets.SHOPIFY_ACCESS_TOKEN }}
+
+      - name: Upload test results
+        uses: actions/upload-artifact@v3
+        if: failure()
+        with:
+          name: playwright-report
+          path: playwright-report/
+
+  deploy-dev:
+    name: Deploy to Development
+    runs-on: ubuntu-latest
+    needs: [test, visual-tests]
+    if: github.ref == 'refs/heads/develop'
+    environment: development
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Shopify CLI
+        run: npm install -g @shopify/cli @shopify/theme
+
+      - name: Deploy to development theme
+        run: shopify theme push --development --path=./ --json
+        env:
+          SHOPIFY_CLI_PARTNER_TOKEN: ${{ secrets.SHOPIFY_CLI_PARTNER_TOKEN }}
+          SHOPIFY_STORE: ${{ secrets.SHOPIFY_STORE_URL }}
+
+      - name: Comment PR with preview link
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: '🚀 Development theme deployed! Preview at: https://${{ secrets.SHOPIFY_STORE_URL }}?preview_theme_id=${{ secrets.SHOPIFY_DEV_THEME_ID }}'
+            })
+
+  deploy-production:
+    name: Deploy to Production
+    runs-on: ubuntu-latest
+    needs: [test, visual-tests]
+    if: github.ref == 'refs/heads/main'
+    environment: production
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Shopify CLI
+        run: npm install -g @shopify/cli @shopify/theme
+
+      - name: Run Lighthouse CI
+        run: npm run lighthouse
+        env:
+          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}
+
+      - name: Deploy to live theme
+        run: shopify theme push --live --path=./ --json
+        env:
+          SHOPIFY_CLI_PARTNER_TOKEN: ${{ secrets.SHOPIFY_CLI_PARTNER_TOKEN }}
+          SHOPIFY_STORE: ${{ secrets.SHOPIFY_STORE_URL }}
+
+      - name: Create release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: v${{ github.run_number }}
+          release_name: Release v${{ github.run_number }}
+          body: |
+            Automated deployment to production
+            - Theme deployed successfully
+            - All tests passed
+            - Performance checks completed
