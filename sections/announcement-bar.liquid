@@ -1,0 +1,81 @@
+{% comment %}
+  This is the announcement bar section for the Shopify AI Theme Dev project
+{% endcomment %}
+
+{%- if section.settings.enable_announcement -%}
+  <div class="announcement-bar" role="region" aria-label="{{ 'sections.announcement_bar.announcement' | t }}">
+    {%- if section.settings.announcement_text != blank -%}
+      <div class="page-width">
+        <p class="announcement-bar__message">
+          {{ section.settings.announcement_text | escape }}
+          {%- if section.settings.announcement_link != blank -%}
+            <a href="{{ section.settings.announcement_link }}" class="announcement-bar__link">
+              {{ section.settings.announcement_link_text | escape }}
+            </a>
+          {%- endif -%}
+        </p>
+      </div>
+    {%- endif -%}
+  </div>
+{%- endif -%}
+
+{% schema %}
+{
+  "name": "Announcement bar",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "enable_announcement",
+      "label": "Show announcement",
+      "default": false
+    },
+    {
+      "type": "text",
+      "id": "announcement_text",
+      "label": "Announcement text",
+      "default": "Announce something here"
+    },
+    {
+      "type": "url",
+      "id": "announcement_link",
+      "label": "Announcement link"
+    },
+    {
+      "type": "text",
+      "id": "announcement_link_text",
+      "label": "Announcement link text",
+      "default": "Learn more"
+    },
+    {
+      "type": "color",
+      "id": "color_bg",
+      "label": "Background color",
+      "default": "#3B82F6"
+    },
+    {
+      "type": "color",
+      "id": "color_text",
+      "label": "Text color",
+      "default": "#FFFFFF"
+    }
+  ]
+}
+{% endschema %}
+
+<style>
+.announcement-bar {
+  background-color: {{ section.settings.color_bg }};
+  color: {{ section.settings.color_text }};
+  text-align: center;
+  padding: 10px 0;
+}
+
+.announcement-bar__message {
+  margin-bottom: 0;
+}
+
+.announcement-bar__link {
+  text-decoration: underline;
+  color: {{ section.settings.color_text }};
+}
+</style>
