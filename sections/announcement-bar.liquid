@@ -2,11 +2,75 @@
   This is the announcement bar section for the Shopify AI Theme Dev project
 {% endcomment %}
 
+{%- if section.settings.enable_announcement != true and section.settings.show_promo_bar -%}
+<div class="promo-bar" role="region" style="background-color: {{ section.settings.promo_bg_color }}">
+  <div class="page-width">
+    <div class="promo-bar__container">
+      <!-- First column section -->
+      <div class="promo-bar__item">
+        <div class="promo-bar__icon-wrapper">
+          {%- if section.settings.show_free_badge -%}
+            <span class="promo-bar__badge" style="color: {{ section.settings.promo_text_color }}; border-color: {{ section.settings.promo_text_color }}">FREE</span>
+          {%- endif -%}
+        </div>
+        <div class="promo-bar__text-wrapper">
+          <p class="promo-bar__title" style="color: {{ section.settings.promo_text_color }}">
+            {{ section.settings.promo_first_title | escape }}</p>
+          <p class="promo-bar__subtitle" style="color: {{ section.settings.promo_subtitle_color }}">
+            {{ section.settings.promo_first_subtitle | escape }}</p>
+        </div>
+      </div>
+
+      <!-- Second column section -->
+      <div class="promo-bar__item">
+        <div class="promo-bar__icon-wrapper">
+          <svg class="promo-bar__icon" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="{{ section.settings.promo_text_color }}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="1" y="3" width="15" height="13"></rect>
+            <polygon points="16 8 20 8 23 11 23 16 16 16 16 8"></polygon>
+            <circle cx="5.5" cy="18.5" r="2.5"></circle>
+            <circle cx="18.5" cy="18.5" r="2.5"></circle>
+          </svg>
+        </div>
+        <div class="promo-bar__text-wrapper">
+          <p class="promo-bar__title" style="color: {{ section.settings.promo_text_color }}">
+            {{ section.settings.promo_second_title | escape }}</p>
+          <p class="promo-bar__subtitle" style="color: {{ section.settings.promo_subtitle_color }}">
+            {{ section.settings.promo_second_subtitle | escape }}</p>
+        </div>
+      </div>
+
+      <!-- Third column section -->
+      <div class="promo-bar__item">
+        <div class="promo-bar__icon-wrapper">
+          <svg class="promo-bar__icon" xmlns="http://www.w3.org/2000/svg" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="{{ section.settings.promo_text_color }}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect>
+            <line x1="12" y1="18" x2="12.01" y2="18"></line>
+          </svg>
+        </div>
+        <div class="promo-bar__text-wrapper">
+          <p class="promo-bar__title" style="color: {{ section.settings.promo_text_color }}">
+            {{ section.settings.promo_third_title | escape }}</p>
+          {%- if section.settings.promo_third_subtitle != blank -%}
+            <p class="promo-bar__subtitle" style="color: {{ section.settings.promo_subtitle_color }}">
+              {{ section.settings.promo_third_subtitle | escape }}</p>
+          {%- endif -%}
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{%- endif -%}
+
+{% comment %}
+  The original announcement bar is preserved below, but hidden.
+  It will only be shown if enabled in theme editor and the promo bar above is removed/disabled.
+{% endcomment %}
 {%- if section.settings.enable_announcement -%}
-  <div class="announcement-bar" role="region" aria-label="{{ 'sections.announcement_bar.announcement' | t }}">
+  <div class="announcement-bar" role="region" aria-label="{{ 'sections.announcement_bar.announcement' | t }}" style="display: none;">
     {%- if section.settings.announcement_text != blank -%}
       <div class="page-width">
         <p class="announcement-bar__message">
+          <span class="announcement-emoji">{{ section.settings.announcement_emoji }}</span>
           {{ section.settings.announcement_text | escape }}
           {%- if section.settings.announcement_link != blank -%}
             <a href="{{ section.settings.announcement_link }}" class="announcement-bar__link">
@@ -21,13 +85,105 @@
 
 {% schema %}
 {
-  "name": "Announcement bar",
+  "name": "Promo bar",
   "settings": [
+    {
+      "type": "header",
+      "content": "Promo Bar Settings"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_promo_bar",
+      "label": "Show promo bar",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "First Column"
+    },
+    {
+      "type": "text",
+      "id": "promo_first_title",
+      "label": "First column title",
+      "default": "No import charges"
+    },
+    {
+      "type": "text",
+      "id": "promo_first_subtitle",
+      "label": "First column subtitle",
+      "default": "For local warehouse items"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_free_badge",
+      "label": "Show FREE badge",
+      "default": true
+    },
+    {
+      "type": "header",
+      "content": "Second Column"
+    },
+    {
+      "type": "text",
+      "id": "promo_second_title",
+      "label": "Second column title",
+      "default": "Delivery guarantee"
+    },
+    {
+      "type": "text",
+      "id": "promo_second_subtitle",
+      "label": "Second column subtitle",
+      "default": "Refund for any issues"
+    },
+    {
+      "type": "header",
+      "content": "Third Column"
+    },
+    {
+      "type": "text",
+      "id": "promo_third_title",
+      "label": "Third column title",
+      "default": "Get the Temu App"
+    },
+    {
+      "type": "text",
+      "id": "promo_third_subtitle",
+      "label": "Third column subtitle",
+      "default": ""
+    },
+    {
+      "type": "color",
+      "id": "promo_bg_color",
+      "label": "Background color",
+      "default": "#000000"
+    },
+    {
+      "type": "color",
+      "id": "promo_text_color",
+      "label": "Title text color",
+      "default": "#ffde59"
+    },
+    {
+      "type": "color",
+      "id": "promo_subtitle_color",
+      "label": "Subtitle text color",
+      "default": "#a2e878"
+    },
+    {
+      "type": "header",
+      "content": "Legacy Announcement Bar Settings"
+    },
     {
       "type": "checkbox",
       "id": "enable_announcement",
-      "label": "Show announcement",
+      "label": "Show legacy announcement (will replace promo bar)",
       "default": false
+    },
+    {
+      "type": "text",
+      "id": "announcement_emoji",
+      "label": "Emoji (optional)",
+      "default": "🎉"
     },
     {
       "type": "text",
@@ -63,6 +219,77 @@
 {% endschema %}
 
 <style>
+/* New promo bar styling */
+.promo-bar {
+  background-color: #000000;
+  color: #ffde59;
+  padding: 12px 0;
+}
+
+.promo-bar__container {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.promo-bar__item {
+  display: flex;
+  align-items: center;
+  width: 33.333%;
+  justify-content: center;
+}
+
+.promo-bar__icon-wrapper {
+  margin-right: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.promo-bar__badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 600;
+  background-color: transparent;
+  border: 2px solid #ffde59;
+  color: #ffde59;
+  border-radius: 50%;
+  width: 28px;
+  height: 28px;
+  text-transform: uppercase;
+}
+
+.promo-bar__icon {
+  color: #ffde59;
+  width: 28px;
+  height: 28px;
+  fill: none;
+  stroke-width: 2;
+}
+
+.promo-bar__text-wrapper {
+  display: flex;
+  flex-direction: column;
+}
+
+.promo-bar__title {
+  font-size: 16px;
+  font-weight: 600;
+  margin: 0;
+  color: #ffde59;
+  line-height: 1.2;
+}
+
+.promo-bar__subtitle {
+  font-size: 14px;
+  margin: 0;
+  color: #a2e878;
+  line-height: 1.2;
+}
+
+/* Original announcement bar styling (preserved but hidden) */
 .announcement-bar {
   background-color: {{ section.settings.color_bg }};
   color: {{ section.settings.color_text }};
@@ -71,11 +298,41 @@
 }
 
 .announcement-bar__message {
-  margin-bottom: 0;
+  margin: 0;
+  font-size: 14px;
+  font-weight: 400;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.announcement-emoji {
+  display: inline-block;
+  margin-right: 8px;
+  font-size: 16px;
 }
 
 .announcement-bar__link {
   text-decoration: underline;
   color: {{ section.settings.color_text }};
+  margin-left: 5px;
+}
+
+/* Responsive styling for promo bar */
+@media screen and (max-width: 989px) {
+  .promo-bar__container {
+    flex-direction: column;
+    gap: 10px;
+  }
+  
+  .promo-bar__item {
+    width: 100%;
+  }
+}
+
+@media screen and (min-width: 750px) and (max-width: 989px) {
+  .promo-bar__container {
+    flex-direction: row;
+  }
 }
 </style>
