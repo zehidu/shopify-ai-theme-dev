@@ -1,0 +1,197 @@
+{% comment %}
+  This is the cart template for the Shopify AI Theme Dev project
+{% endcomment %}
+
+<div class="page-width">
+  <div class="section-header text-center">
+    <h1>{{ 'cart.general.title' | t }}</h1>
+  </div>
+
+  {% if cart.item_count > 0 %}
+    <form action="{{ routes.cart_url }}" method="post" novalidate class="cart">
+      <table class="cart-table">
+        <thead>
+          <tr>
+            <th class="cart-table__heading" colspan="2">{{ 'cart.label.product' | t }}</th>
+            <th class="cart-table__heading">{{ 'cart.label.price' | t }}</th>
+            <th class="cart-table__heading">{{ 'cart.label.quantity' | t }}</th>
+            <th class="cart-table__heading">{{ 'cart.label.total' | t }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in cart.items %}
+            <tr class="cart-table__row">
+              <td class="cart-table__image-cell">
+                <a href="{{ item.url | within: collections.all }}">
+                  <img 
+                    src="{{ item | img_url: '100x100', crop: 'center' }}" 
+                    alt="{{ item.title | escape }}"
+                    class="cart-table__image">
+                </a>
+              </td>
+              <td class="cart-table__product-cell">
+                <a href="{{ item.url }}" class="cart-table__product-title">
+                  {{ item.product.title }}
+                </a>
+                {% unless item.product.has_only_default_variant %}
+                  <p class="cart-table__product-variant">{{ item.variant.title }}</p>
+                {% endunless %}
+
+                <a href="{{ routes.cart_change_url }}?line={{ forloop.index }}&quantity=0" 
+                   class="cart-table__remove-button">
+                  Remove
+                </a>
+              </td>
+              <td class="cart-table__price-cell">
+                {{ item.price | money }}
+              </td>
+              <td class="cart-table__quantity-cell">
+                <input 
+                  type="number" 
+                  name="updates[]" 
+                  id="updates_{{ item.key }}" 
+                  value="{{ item.quantity }}" 
+                  min="0"
+                  class="cart-table__quantity-input">
+              </td>
+              <td class="cart-table__total-cell">
+                {{ item.line_price | money }}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+
+      <div class="cart__footer">
+        <div class="cart__footer-update">
+          <button type="submit" name="update" class="cart__update-button btn">
+            {{ 'cart.general.update' | t }}
+          </button>
+        </div>
+
+        <div class="cart__footer-subtotal">
+          <span class="cart__subtotal-title">{{ 'cart.general.subtotal' | t }}</span>
+          <span class="cart__subtotal">{{ cart.total_price | money }}</span>
+        </div>
+
+        <div class="cart__footer-message">
+          {{ 'cart.general.taxes_and_shipping_policy_at_checkout_html' | t }}
+        </div>
+
+        <div class="cart__footer-checkout">
+          <button type="submit" name="checkout" class="cart__checkout-button btn btn--primary">
+            {{ 'cart.general.checkout' | t }}
+          </button>
+        </div>
+      </div>
+    </form>
+  {% else %}
+    <div class="empty-page-content text-center">
+      <h1>{{ 'cart.general.empty' | t }}</h1>
+      <p>{{ 'cart.general.continue_browsing_html' | t }}</p>
+      <div class="cart__empty-continue">
+        <a href="{{ routes.root_url }}" class="btn btn--primary">
+          {{ 'cart.general.continue_shopping' | t }}
+        </a>
+      </div>
+    </div>
+  {% endif %}
+</div>
+
+<style>
+  .cart-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 30px;
+  }
+  
+  .cart-table__heading {
+    text-align: left;
+    padding: 10px 0;
+    border-bottom: 1px solid #e8e8e8;
+  }
+  
+  .cart-table__row {
+    border-bottom: 1px solid #e8e8e8;
+  }
+  
+  .cart-table__image-cell {
+    width: 100px;
+    padding: 10px 0;
+  }
+  
+  .cart-table__image {
+    max-width: 80px;
+    display: block;
+  }
+  
+  .cart-table__product-cell,
+  .cart-table__price-cell,
+  .cart-table__quantity-cell,
+  .cart-table__total-cell {
+    padding: 10px 0;
+  }
+  
+  .cart-table__product-title {
+    display: block;
+    margin-bottom: 5px;
+    text-decoration: none;
+    color: inherit;
+    font-weight: 500;
+  }
+  
+  .cart-table__product-variant {
+    color: #6B7280;
+    font-size: 0.9em;
+    margin-bottom: 5px;
+  }
+  
+  .cart-table__remove-button {
+    color: #6B7280;
+    font-size: 0.9em;
+    text-decoration: underline;
+  }
+  
+  .cart-table__quantity-input {
+    width: 60px;
+    padding: 5px;
+    text-align: center;
+  }
+  
+  .cart__footer {
+    padding-top: 20px;
+  }
+  
+  .cart__footer-update {
+    margin-bottom: 20px;
+    text-align: right;
+  }
+  
+  .cart__footer-subtotal {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #e8e8e8;
+    font-weight: bold;
+  }
+  
+  .cart__footer-message {
+    margin: 20px 0;
+  }
+  
+  .cart__footer-checkout {
+    text-align: right;
+  }
+  
+  .cart__checkout-button {
+    padding: 10px 30px;
+  }
+  
+  .empty-page-content {
+    padding: 30px 0;
+  }
+  
+  .cart__empty-continue {
+    margin-top: 20px;
+  }
+</style>

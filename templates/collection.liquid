@@ -1,0 +1,136 @@
+{% comment %}
+  This is the collection template for the Shopify AI Theme Dev project
+{% endcomment %}
+
+<div class="page-width">
+  <div class="section-header text-center">
+    <h1>{{ collection.title }}</h1>
+    {% if collection.description != blank %}
+      <div class="collection-description">
+        {{ collection.description }}
+      </div>
+    {% endif %}
+  </div>
+
+  <div class="collection-filters">
+    <div class="collection-sort">
+      <label for="SortBy">Sort by</label>
+      <select id="SortBy" class="collection-sort__select">
+        <option value="manual">Featured</option>
+        <option value="best-selling">Best selling</option>
+        <option value="title-ascending">Alphabetically, A-Z</option>
+        <option value="title-descending">Alphabetically, Z-A</option>
+        <option value="price-ascending">Price, low to high</option>
+        <option value="price-descending">Price, high to low</option>
+        <option value="created-descending">Date, new to old</option>
+        <option value="created-ascending">Date, old to new</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="collection-products">
+    {% if collection.products.size > 0 %}
+      <ul class="grid grid--uniform grid--view-items">
+        {% for product in collection.products %}
+          <li class="grid__item small--one-half medium-up--one-quarter">
+            <div class="product-card">
+              <a href="{{ product.url | within: collection }}" class="product-card__link">
+                <div class="product-card__image-wrapper">
+                  {% if product.featured_image %}
+                    <img src="{{ product.featured_image | img_url: '300x300', crop: 'center' }}" alt="{{ product.featured_image.alt | escape }}" class="product-card__image">
+                  {% else %}
+                    {{ 'product-1' | placeholder_svg_tag: 'product-card__image' }}
+                  {% endif %}
+                </div>
+                
+                <div class="product-card__info">
+                  <div class="product-card__name">{{ product.title }}</div>
+                  <div class="product-card__price">{{ product.price | money }}</div>
+                </div>
+              </a>
+            </div>
+          </li>
+        {% endfor %}
+      </ul>
+
+      {% if paginate.pages > 1 %}
+        <div class="pagination">
+          {{ paginate | default_pagination }}
+        </div>
+      {% endif %}
+    {% else %}
+      <div class="empty-collection">
+        <p>No products found in this collection</p>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+<style>
+  .collection-description {
+    margin-bottom: 30px;
+  }
+  
+  .collection-filters {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 30px;
+  }
+  
+  .collection-sort__select {
+    padding: 8px;
+  }
+  
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(1, 1fr);
+    gap: 20px;
+  }
+  
+  @media screen and (min-width: 550px) {
+    .grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+  
+  @media screen and (min-width: 750px) {
+    .grid {
+      grid-template-columns: repeat(4, 1fr);
+    }
+  }
+  
+  .product-card {
+    border: 1px solid #e8e8e8;
+    border-radius: 5px;
+    overflow: hidden;
+    transition: box-shadow 0.3s ease;
+  }
+  
+  .product-card:hover {
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+  }
+  
+  .product-card__image {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+  
+  .product-card__info {
+    padding: 15px;
+  }
+  
+  .product-card__name {
+    font-weight: 500;
+    margin-bottom: 5px;
+  }
+  
+  .product-card__price {
+    color: #333;
+  }
+  
+  .pagination {
+    margin-top: 30px;
+    text-align: center;
+  }
+</style>

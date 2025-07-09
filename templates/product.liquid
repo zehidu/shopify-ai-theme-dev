@@ -1,0 +1,170 @@
+{% comment %}
+  This is the product template for the Shopify AI Theme Dev project
+{% endcomment %}
+
+<div class="page-width">
+  <div class="product">
+    <div class="product__media-wrapper">
+      <div class="product__media-gallery">
+        <div class="product__media-item">
+          {% if product.featured_media %}
+            <img
+              src="{{ product.featured_media | img_url: '600x600', crop: 'center' }}"
+              alt="{{ product.featured_media.alt | escape }}"
+              class="product__media"
+            >
+          {% else %}
+            {{ 'product-1' | placeholder_svg_tag: 'product__media placeholder' }}
+          {% endif %}
+        </div>
+
+        {% if product.media.size > 1 %}
+          <div class="product__media-list">
+            {% for media in product.media %}
+              <div class="product__media-thumbnail">
+                <img 
+                  src="{{ media | img_url: '150x150', crop: 'center' }}" 
+                  alt="{{ media.alt | escape }}" 
+                  class="product__media-thumbnail-image"
+                >
+              </div>
+            {% endfor %}
+          </div>
+        {% endif %}
+      </div>
+    </div>
+
+    <div class="product__info-wrapper">
+      <h1 class="product__title">{{ product.title }}</h1>
+
+      <div class="product__price">
+        {{ product.price | money }}
+      </div>
+
+      {% if product.description != blank %}
+        <div class="product__description">
+          {{ product.description }}
+        </div>
+      {% endif %}
+
+      {% form 'product', product %}
+        <input type="hidden" name="id" value="{{ product.selected_or_first_available_variant.id }}">
+
+        {% if product.variants.size > 1 %}
+          {% for option in product.options_with_values %}
+            <div class="product__option">
+              <label for="Option-{{ forloop.index }}">
+                {{ option.name }}
+              </label>
+
+              <select
+                id="Option-{{ forloop.index }}"
+                name="options[{{ option.name | escape }}]"
+                class="product__option-select"
+              >
+                {% for value in option.values %}
+                  <option
+                    value="{{ value | escape }}"
+                    {% if option.selected_value == value %}selected="selected"{% endif %}
+                  >
+                    {{ value }}
+                  </option>
+                {% endfor %}
+              </select>
+            </div>
+          {% endfor %}
+        {% endif %}
+
+        <div class="product__form-buttons">
+          <button
+            type="submit"
+            name="add"
+            class="product__add-to-cart btn btn--primary"
+            {% if product.available == false %}disabled{% endif %}
+          >
+            {% if product.available %}
+              Add to cart
+            {% else %}
+              Sold out
+            {% endif %}
+          </button>
+        </div>
+      {% endform %}
+    </div>
+  </div>
+</div>
+
+<style>
+  .product {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .product {
+      grid-template-columns: 1fr 1fr;
+    }
+  }
+  
+  .product__media-gallery {
+    margin-bottom: 20px;
+  }
+  
+  .product__media {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+  
+  .product__media-list {
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 10px;
+    gap: 5px;
+  }
+  
+  .product__media-thumbnail {
+    width: 60px;
+    cursor: pointer;
+  }
+  
+  .product__media-thumbnail-image {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+  
+  .product__title {
+    margin-top: 0;
+    margin-bottom: 15px;
+  }
+  
+  .product__price {
+    margin-bottom: 20px;
+    font-weight: bold;
+  }
+  
+  .product__description {
+    margin-bottom: 20px;
+  }
+  
+  .product__option {
+    margin-bottom: 15px;
+  }
+  
+  .product__option-select {
+    width: 100%;
+    padding: 8px;
+  }
+  
+  .product__form-buttons {
+    margin-top: 20px;
+  }
+  
+  .product__add-to-cart {
+    padding: 10px 20px;
+    width: 100%;
+    max-width: 300px;
+  }
+</style>

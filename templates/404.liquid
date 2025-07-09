@@ -1,0 +1,32 @@
+{% comment %}
+  The 404 template is shown when a page is not found
+{% endcomment %}
+
+<div class="page-width text-center">
+  <h1>{{ 'general.404.title' | t }}</h1>
+  <p>{{ 'general.404.subtext' | t }}</p>
+  <div class="action-links">
+    <a href="{{ routes.root_url }}" class="btn btn--primary">
+      {{ 'general.404.link' | t }}
+    </a>
+  </div>
+</div>
+
+<style>
+  .page-width {
+    padding: 55px 0;
+  }
+  
+  .action-links {
+    margin-top: 30px;
+  }
+  
+  .btn--primary {
+    padding: 10px 20px;
+    background-color: var(--color-primary);
+    color: white;
+    text-decoration: none;
+    border-radius: var(--buttons-radius);
+    display: inline-block;
+  }
+</style>
